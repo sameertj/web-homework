@@ -14,4 +14,11 @@ defmodule HomeworkWeb.Router do
       context: %{pubsub: HomeworkWeb.Endpoint}
     )
   end
+
+  scope "/", HomeworkWeb do
+    pipe_through(:api)
+
+    get "/", PageController, :index
+  end
+
 end

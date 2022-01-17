@@ -7,6 +7,7 @@ defmodule Homework.Users do
   alias Homework.Repo
 
   alias Homework.Users.User
+  alias Homework.Queries, as: Queries
 
   @doc """
   Returns the list of users.
@@ -20,6 +21,85 @@ defmodule Homework.Users do
   def list_users(_args) do
     Repo.all(User)
   end
+
+
+  def first_name_last_name_matching_query(first_name,last_name) do
+
+    first_name_exp = "%" <> first_name <> "%"
+    last_name_exp = "%" <> last_name <> "%"
+
+
+    from u in "users",
+                 where: like(fragment("lower(?)",u.first_name), ^first_name_exp) and like(fragment("lower(?)",u.last_name), ^last_name_exp),
+                 select: %Homework.Users.User{first_name: u.first_name,last_name: u.last_name, id: u.id}
+
+  end
+
+  def first_name_matching_query(first_name) do
+
+    first_name_exp = "%" <> first_name <> "%"
+
+    from u in "users",
+                 where: like(fragment("lower(?)",u.first_name), ^first_name_exp),
+                 select: %Homework.Users.User{first_name: u.first_name,last_name: u.last_name, id: u.id}
+
+  end
+
+  def last_name_matching_query(last_name) do
+
+
+    last_name_exp = "%" <> last_name <> "%"
+    from u in "users",
+                 where: like(fragment("lower(?)",u.last_name), ^last_name_exp),
+                 select: %Homework.Users.User{first_name: u.first_name,last_name: u.last_name, id: u.id}
+
+  end
+
+  def user_table_query() do
+
+    from u in "users",
+             select: %Homework.Users.User{first_name: u.first_name,last_name: u.last_name, id: u.id}
+
+  end
+
+  def list_users_by_name_matching_query(first_name,last_name) do
+
+    cond do
+
+      not(is_nil(first_name) or is_nil(last_name)) -> first_name_last_name_matching_query(first_name,last_name)
+      not(is_nil(first_name)) -> first_name_matching_query(first_name)
+      not(is_nil(last_name)) -> last_name_matching_query(last_name)
+      true -> user_table_query()
+
+    end
+
+  end
+
+  def run_list_users_by_name_matching(first_name, last_name) do
+
+    query = list_users_by_name_matching_query(first_name,last_name);
+    Queries.run_query(query);
+
+  end
+
+  def run_list_users_by_name_matching(first_name, last_name,limit) do
+
+    query = list_users_by_name_matching_query(first_name,last_name);
+    Queries.run_query_with_limit_clause(query,limit);
+
+  end
+
+  def run_list_users_by_name_matching(first_name, last_name,page,limit) do
+
+    query = list_users_by_name_matching_query(first_name,last_name);
+    cond  do
+      not(is_nil(limit)) ->
+        Queries.run_query_with_page_limit_clause(query,page,limit,"users");
+    true ->
+        Queries.run_query(query)
+    end
+ end
+
 
   @doc """
   Gets a single user.

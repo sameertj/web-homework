@@ -17,10 +17,22 @@ defmodule Homework.Transactions.Transaction do
     timestamps()
   end
 
+  def convert_amt_to_cents(changeset) do
+    amount = get_field(changeset, :amount)
+
+    if not(is_nil(amount)) do
+      put_change(changeset, :amount, amount * 100)
+    else
+      changeset
+    end
+  end
+
   @doc false
   def changeset(transaction, attrs) do
     transaction
     |> cast(attrs, [:user_id, :amount, :debit, :description, :merchant_id])
+    |> foreign_key_constraint(:user_id)
     |> validate_required([:user_id, :amount, :debit, :description, :merchant_id])
+#    |> convert_amt_to_cents()
   end
 end

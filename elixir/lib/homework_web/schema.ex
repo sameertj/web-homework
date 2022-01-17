@@ -15,15 +15,42 @@ defmodule HomeworkWeb.Schema do
       resolve(&TransactionsResolver.transactions/3)
     end
 
+    @desc "Get all Transactions between min max"
+    field(:transactions_between, list_of(:transaction)) do
+      arg :min, :string
+      arg :max, :string
+      arg :page, :integer
+      arg :limit, :integer
+      resolve(&TransactionsResolver.transactions_between_min_max/3)
+    end
+
     @desc "Get all Users"
     field(:users, list_of(:user)) do
       resolve(&UsersResolver.users/3)
+    end
+
+    @desc "Get all Users by name matching"
+    field(:users_by_name, list_of(:user)) do
+      arg :first_name, :string
+      arg :last_name, :string
+      arg :page, :integer
+      arg :limit, :integer
+      resolve(&UsersResolver.users_by_name_matching/3)
     end
 
     @desc "Get all Merchants"
     field(:merchants, list_of(:merchant)) do
       resolve(&MerchantsResolver.merchants/3)
     end
+
+    @desc "Get Merchants by name matching"
+    field(:merchants_by_name, list_of(:merchant)) do
+      arg :name, :string
+      arg :page, :integer
+      arg :limit, :integer
+      resolve(&MerchantsResolver.merchants_by_name_matching/3)
+    end
+
   end
 
   mutation do

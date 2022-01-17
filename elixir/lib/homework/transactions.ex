@@ -7,6 +7,7 @@ defmodule Homework.Transactions do
   alias Homework.Repo
 
   alias Homework.Transactions.Transaction
+  alias Homework.Queries, as: Queries
 
   @doc """
   Returns the list of transactions.
@@ -19,6 +20,53 @@ defmodule Homework.Transactions do
   """
   def list_transactions(_args) do
     Repo.all(Transaction)
+  end
+
+
+  def list_transactions_between_min_max(min, max) do
+
+    IO.inspect("min val is #{min}")
+    IO.inspect("max val is #{max}")
+
+    query = from t in "transactions",
+                 where: t.amount >= ^min and t.amount <= ^max,
+                 select: %{amount: t.amount,description: t.description,credit: t.credit, debit: t.debit, user_id: t.user_id, merchant_id: t.merchant_id,id: t.id}
+
+    Queries.run_query(query)
+
+
+  end
+
+
+  def list_transactions_between_min_max(min, max, limit) do
+
+    IO.inspect("min val is #{min}")
+    IO.inspect("max val is #{max}")
+
+    query = from t in "transactions",
+                 where: t.amount >= ^min and t.amount <= ^max,
+                 select: %{amount: t.amount,description: t.description,credit: t.credit, debit: t.debit, user_id: t.user_id, merchant_id: t.merchant_id,id: t.id}
+
+    Queries.run_query_with_limit_clause(query,limit)
+
+
+  end
+
+
+
+  def list_transactions_between_min_max(min, max, page, limit) do
+
+    IO.inspect("min val is #{min}")
+    IO.inspect("max val is #{max}")
+
+    query = from t in "transactions",
+              where: t.amount >= ^min and t.amount <= ^max,
+              select: %{amount: t.amount,description: t.description,credit: t.credit, debit: t.debit, user_id: t.user_id, merchant_id: t.merchant_id,id: t.id}
+
+
+    Queries.run_query_with_page_limit_clause(query,page,limit,"transactions");
+
+
   end
 
   @doc """

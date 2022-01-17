@@ -1,11 +1,40 @@
 defmodule HomeworkWeb.Resolvers.UsersResolver do
   alias Homework.Users
+  alias HomeworkWeb.Resolvers.ResolverFunctions, as: ResolverFunctions
 
   @doc """
   Get a list of users
   """
   def users(_root, args, _info) do
     {:ok, Users.list_users(args)}
+  end
+
+  @doc """
+  Get a list of users by name matching
+  """
+  def users_by_name_matching(_root, args, _info) do
+    fetch_records_by_name_matching(args);
+  end
+
+  def fetch_records_by_name_matching(args)  do
+
+    first_name = Map.get(args,:first_name)
+    last_name = Map.get(args,:last_name)
+    page = Map.get(args,:page)
+    limit = Map.get(args,:limit)
+
+    validations = ResolverFunctions.validatePageLimitParams(page,limit);
+
+    case validations do
+
+      {:error,error_msg} ->  {:error,error_msg}
+      {:ok,page,limit} ->  {:ok, Users.run_list_users_by_name_matching(first_name,last_name,page,limit)}
+      {:ok,limit} ->  {:ok, Users.run_list_users_by_name_matching(first_name,last_name,limit)}
+      {:ok} ->  {:ok, Users.run_list_users_by_name_matching(first_name,last_name)}
+       _ -> {:error}
+
+    end
+
   end
 
   @doc """

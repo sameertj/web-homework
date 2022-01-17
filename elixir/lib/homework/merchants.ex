@@ -7,6 +7,7 @@ defmodule Homework.Merchants do
   alias Homework.Repo
 
   alias Homework.Merchants.Merchant
+  alias Homework.Queries, as: Queries
 
   @doc """
   Returns the list of merchants.
@@ -20,6 +21,56 @@ defmodule Homework.Merchants do
   def list_merchants(_args) do
     Repo.all(Merchant)
   end
+
+  @doc """
+  Returns the list of merchants by partial name matching.
+
+      iex> list_merchants([])
+      [%Merchant{}, ...]
+
+  """
+
+  def list_merchants_by_name_matching(name) do
+
+    name_exp = "%" <> name <> "%"
+
+    query = from m in "merchants",
+                 where: like(fragment("lower(?)",m.name), ^name_exp),
+                 select: %{name: m.name,description: m.description, id: m.id}
+
+
+    Queries.run_query(query)
+
+  end
+
+
+  def list_merchants_by_name_matching(name,limit) do
+
+    name_exp = "%" <> name <> "%"
+
+
+    query = from m in "merchants",
+                 where: like(fragment("lower(?)",m.name), ^name_exp),
+                 select: %{name: m.name,description: m.description, id: m.id}
+
+
+    Queries.run_query_with_limit_clause(query)
+
+  end
+
+
+  def list_merchants_by_name_matching(name,page,limit) do
+
+    name_exp = "%" <> name <> "%"
+
+    query = from m in "merchants",
+                 where: like(fragment("lower(?)",m.name), ^name_exp),
+                 select: %{name: m.name,description: m.description, id: m.id}
+
+    Queries.run_query_with_page_limit_clause(query,page,limit,"merchants");
+
+  end
+
 
   @doc """
   Gets a single merchant.

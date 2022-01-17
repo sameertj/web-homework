@@ -4,12 +4,14 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
   """
   use Absinthe.Schema.Notation
 
+  import HomeworkWeb.Schemas.Types
+
   alias HomeworkWeb.Resolvers.TransactionsResolver
 
   object :transaction do
     field(:id, non_null(:id))
     field(:user_id, :id)
-    field(:amount, :integer)
+    field(:amount, :money)
     field(:credit, :boolean)
     field(:debit, :boolean)
     field(:description, :string)
@@ -31,8 +33,8 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     field :create_transaction, :transaction do
       arg(:user_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
-      @desc "amount is in cents"
-      arg(:amount, non_null(:integer))
+      @desc "amount is dollars in string representation"
+      arg(:amount, non_null(:money))
       arg(:credit, non_null(:boolean))
       arg(:debit, non_null(:boolean))
       arg(:description, non_null(:string))
@@ -45,8 +47,8 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
       arg(:id, non_null(:id))
       arg(:user_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
-      @desc "amount is in cents"
-      arg(:amount, non_null(:integer))
+      @desc "amount is dollars in string representation"
+      arg(:amount, non_null(:money))
       arg(:credit, non_null(:boolean))
       arg(:debit, non_null(:boolean))
       arg(:description, non_null(:string))
